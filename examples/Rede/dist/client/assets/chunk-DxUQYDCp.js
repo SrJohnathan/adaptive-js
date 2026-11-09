@@ -1,1 +1,0 @@
-const e=/* @__PURE__ */ new Set([`http:`,`https:`]);function t(t){let n=t?.trim();if(!n)return null;let r;try{r=new URL(n)}catch{return null}return e.has(r.protocol)?r.toString():null}function n(e){let t=e?.trim().charAt(0);return t?t.toUpperCase():`?`}export{n,t};

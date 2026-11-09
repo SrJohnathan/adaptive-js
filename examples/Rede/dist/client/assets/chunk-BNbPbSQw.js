@@ -1,1 +1,0 @@
-const e={"chat-omnichannel":`/`,"catalogo-erp":`/catalogo`,"estudio-banners":`/estudio`,"armazenamento-midias":`/armazenamento-midias`,"configuracoes-conta":`/conta`,autenticacao:`/autenticacao`};export{e as t};

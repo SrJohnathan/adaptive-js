@@ -1,1 +1,0 @@
-import{c as e}from"./chunk-DgnDx5kT.js";const[t,n]=e(!1),r=t;function i(){n(!1)}function a(){console.log(t()),n(e=>!e)}export{i as n,a as r,r as t};

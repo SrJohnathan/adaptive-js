@@ -1,1 +1,0 @@
-import{n as e}from"./chunk-DgnDx5kT.js";import{n as t}from"./chunk-Cyka5SIA.js";e(`components/chatscreen/list-message`,t);

@@ -1,1 +1,0 @@
-import{C as e,b as t,p as n,s as r,t as i}from"./chunk-CliGGW0c.js";var a=/* @__PURE__ */ e({ClientComponet:()=>o});const o=()=>{let[e,i]=r(0);return n(()=>{console.log(e())}),/* @__PURE__ */ t(`div`,{onClick:()=>{i(e()+1)},children:`Cliente Render`})};typeof o==`function`&&i(o,`components/client`,`ClientComponet`,`client`);export{a as n,o as t};
