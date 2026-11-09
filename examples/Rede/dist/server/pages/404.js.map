@@ -1,0 +1,11 @@
+{
+  "mappings": ";AAAA,eAAe,SAAS,eAAe;CACrC,OACE,qBAAC,QAAD;EAAM,WAAU;YACd,sBAAC,WAAD;GAAS,WAAU;aAAnB;IACE,qBAAC,QAAD;KAAM,WAAU;eAA8D;KAAU;IACxF,qBAAC,MAAD;KAAI,WAAU;eAA2B;KAA0B;IACnE,qBAAC,KAAD;KAAG,WAAU;eAAqB;KAE9B;IACJ,qBAAC,KAAD;KAAG,WAAU;KAA+H,MAAK;eAAI;KAEjJ;IACI;;EACL",
+  "names": [],
+  "sources": [
+    "/home/johnathan/RustroverProjects/adaptive-js/examples/Rede/src/pages/404.tsx"
+  ],
+  "version": 3,
+  "sourcesContent": [
+    "export default function NotFoundPage() {\n  return (\n    <main className=\"grid min-h-screen place-items-center bg-zinc-950 p-6 text-white\">\n      <section className=\"max-w-md rounded-3xl border border-white/10 bg-zinc-900 p-8\">\n        <span className=\"text-sm font-black uppercase tracking-[0.2em] text-pink-300\">404</span>\n        <h1 className=\"mt-4 text-4xl font-black\">Pagina nao encontrada</h1>\n        <p className=\"mt-3 text-zinc-400\">\n          Esta rota nao existe, ou voce tentou acessar uma pagina protegida sem sessao valida.\n        </p>\n        <a className=\"mt-6 inline-flex rounded-full bg-gradient-to-r from-yellow-300 via-pink-400 to-violet-500 px-5 py-2 font-black text-zinc-950\" href=\"/\">\n          Voltar para a Rede\n        </a>\n      </section>\n    </main>\n  );\n}\n"
+  ]
+}

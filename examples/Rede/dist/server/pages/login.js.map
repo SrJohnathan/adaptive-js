@@ -1,0 +1,11 @@
+{
+  "mappings": "AAAA,SAAS,gBAAkC;AAC3C,SAAS,YAAY;AACrB,SAAS,kBAAkB;AAC3B,SAAS,sBAAsB;;AAE/B,eAAe,eAAe,UAAU,SAAsB;;CAE5D,MAAM,EAAE,YAAY,MAAM,KAAK,YAAY,SAAS,WAAW,EAAE,SAAS,EAAE,EAAE,CAAC;CAC/E,IAAI,SAAS;EACX,OAAO,SAAS,IAAI;;CAEtB,OACE,8CACE,qBAAC,YAAD,EAAc,GACd,qBAAC,gBAAD,EAAkB,EACjB",
+  "names": [],
+  "sources": [
+    "/home/johnathan/RustroverProjects/adaptive-js/examples/Rede/src/pages/login.tsx"
+  ],
+  "version": 3,
+  "sourcesContent": [
+    "import { redirect, type PageContext } from \"@adaptive-js/web\";\nimport { auth } from \"../auth.ts\";\nimport { AuthScreen } from \"../components/omni-hub/auth-screen\";\nimport { ToastContainer } from \"../components/omni-hub/toast-container\";\n\nexport default async function LoginPage(context: PageContext) {\n  // Se o usuário já tiver uma sessão ativa, redireciona diretamente para a home\n  const { session } = await auth.readSession(context?.request ?? { headers: {} });\n  if (session) {\n    return redirect(\"/\");\n  }\n  return (\n    <>\n      <AuthScreen />\n      <ToastContainer />\n    </>\n  );\n}"
+  ]
+}

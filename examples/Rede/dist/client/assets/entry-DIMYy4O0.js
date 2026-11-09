@@ -1,0 +1,1 @@
+import{n as e}from"./chunk-DgnDx5kT.js";import{n as t}from"./chunk-BwBAirY2.js";e(`components/chatscreen/drawer-contact`,t);

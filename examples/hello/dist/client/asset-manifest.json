@@ -1,0 +1,37 @@
+{
+  "components/reactive-hydrate": {
+    "script": "/_adaptive/assets/entry-CFEsXamd.js",
+    "styles": [],
+    "global": false
+  },
+  "components/hydrate-lista-map": {
+    "script": "/_adaptive/assets/entry-CUqNfTvg.js",
+    "styles": [],
+    "global": false
+  },
+  "components/lucide-icons-showcase": {
+    "script": "/_adaptive/assets/entry-Ce9YHbgd.js",
+    "styles": [],
+    "global": false
+  },
+  "components/reactive-client": {
+    "script": "/_adaptive/assets/entry-DVYPm_WQ.js",
+    "styles": [],
+    "global": false
+  },
+  "components/recycler-hydrate": {
+    "script": "/_adaptive/assets/entry-DvZKutBL.js",
+    "styles": [],
+    "global": false
+  },
+  "components/hydrate": {
+    "script": "/_adaptive/assets/entry-Nm2QMblm.js",
+    "styles": [],
+    "global": false
+  },
+  "components/client": {
+    "script": "/_adaptive/assets/entry-_NZV3G7-.js",
+    "styles": [],
+    "global": false
+  }
+}

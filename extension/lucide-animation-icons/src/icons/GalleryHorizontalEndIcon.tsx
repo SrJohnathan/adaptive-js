@@ -1,0 +1,118 @@
+import { ref } from "@adaptive-js/web";
+import {
+  AnimatedIconController,
+  cn,
+  collectElements,
+  createIconAnimation,
+  createMouseHandlers,
+  type AnimatedLucideIconProps,
+  useAnimatedIconHandle
+} from "../base.js";
+
+export type GalleryHorizontalEndIconProps = AnimatedLucideIconProps & {
+  color?: string;
+  strokeWidth?: number;
+};
+
+export function GalleryHorizontalEndIcon({
+  color = "currentColor",
+  size = 24,
+  strokeWidth = 2,
+  className,
+  onMouseEnter,
+  onMouseLeave,
+  duration = 600,
+  animateOnHover = true,
+  iconRef,
+  ...props
+}: GalleryHorizontalEndIconProps) {
+  const controller = ref<AnimatedIconController>(new AnimatedIconController());
+  const path1Ref = ref<SVGPathElement>(null);
+  const path2Ref = ref<SVGPathElement>(null);
+
+  const getTargets = () => collectElements(path1Ref.current, path2Ref.current);
+
+  const startAnimation = () => {
+    if (!path1Ref.current || !path2Ref.current) {
+      return;
+    }
+
+    controller.current?.start([
+      () =>
+        createIconAnimation(
+          path1Ref.current!,
+          [
+            { opacity: 0, transform: "translateX(3px)" },
+            { opacity: 0, transform: "translateX(3px)" },
+            { opacity: 1, transform: "translateX(0)" },
+            { opacity: 1, transform: "translateX(0)" }
+          ],
+          duration,
+          0,
+          "ease"
+        ),
+      () =>
+        createIconAnimation(
+          path2Ref.current!,
+          [
+            { opacity: 0, transform: "translateX(3px)" },
+            { opacity: 0, transform: "translateX(3px)" },
+            { opacity: 1, transform: "translateX(0)" },
+            { opacity: 1, transform: "translateX(0)" }
+          ],
+          duration,
+          150,
+          "ease"
+        )
+    ]);
+  };
+
+  const stopAnimation = () => {
+    controller.current?.destroy(getTargets());
+  };
+
+  useAnimatedIconHandle(iconRef, controller, getTargets, startAnimation, stopAnimation);
+
+  const mouseHandlers = createMouseHandlers(
+    animateOnHover,
+    startAnimation,
+    stopAnimation,
+    onMouseEnter,
+    onMouseLeave
+  );
+
+  return (
+    <div
+      className={cn("adaptive-lucide-animation-icon", className)}
+      aria-label="gallery-horizontal-end"
+      role="img"
+      onMouseEnter={mouseHandlers.onMouseEnter}
+      onMouseLeave={mouseHandlers.onMouseLeave}
+      {...props}
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width={size}
+        height={size}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke={color}
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path
+          ref={path1Ref}
+          d="M2 7v10"
+          style={{ transformOrigin: "center", opacity: 1, transform: "translateX(0)" }}
+        />
+        <path
+          ref={path2Ref}
+          d="M6 5v14"
+          style={{ transformOrigin: "center", opacity: 1, transform: "translateX(0)" }}
+        />
+        <rect width="12" height="18" x="10" y="3" rx="2" />
+      </svg>
+    </div>
+  );
+}

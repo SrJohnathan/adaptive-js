@@ -1,0 +1,11 @@
+{
+  "mappings": "AAAA,SAAQ,QAAQ,cAAa;;AAG7B,OAAO,MAAM,uBAAuB;CAEhC,MAAM,CAAC,MAAK,WAAW,OAAO,EAAE;CAEhC,aAAa;EACT,QAAQ,IAAI,MAAM,CAAC;GACrB;CAEF,OACI,qBAAC,OAAD;EAAK,eAAe;GAChB,QAAQ,MAAM,GAAI,EAAE;;YACpB;EAAoB",
+  "names": [],
+  "sources": [
+    "/home/johnathan/RustroverProjects/adaptive-js/examples/hello/src/components/client.tsx"
+  ],
+  "version": 3,
+  "sourcesContent": [
+    "import {events, signal} from \"@adaptive-js/web\";\n\n\nexport const ClientComponet = () => {\n\n    const [test,setTest] = signal(0)\n\n    events(() => {\n        console.log(test())\n    })\n\n    return (\n        <div onClick={() => {\n            setTest(test()  + 1)\n        }} >Cliente Render</div>\n    )\n}\n"
+  ]
+}

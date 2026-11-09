@@ -1,0 +1,25 @@
+{
+  "name": "@adaptive-js/hello",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node ../../packages/ci/dist/index.js  dev .",
+    "build": "node ../../packages/ci/dist/index.js build .",
+    "preview": "node ../../packages/ci/dist/index.js preview .",
+    "start": "node ../../packages/ci/dist/index.js start .",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@adaptive-js/ci": "file:../../packages/ci",
+    "@adaptive-js/web": "file:../../packages/web",
+    "@adaptive-js/components": "file:../../extension/components",
+    "@adaptive-js/extension-lucide-animation-icons": "file:../../extension/lucide-animation-icons"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.7",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.7",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3"
+  }
+}

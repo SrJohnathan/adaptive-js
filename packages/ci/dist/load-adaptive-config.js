@@ -1,0 +1,166 @@
+/*
+ * Copyright (c) 2026 Antonio Johnathan
+ * Licensed under the MIT License.
+ *
+ * Carrega adaptive.config.{ts,mts,js,mjs,cjs} da raiz do app.
+ */
+import fs from "node:fs/promises";
+import path from "node:path";
+import { pathToFileURL } from "node:url";
+import { createRequire } from "node:module";
+const CONFIG_FILES = [
+    "adaptive.config.ts",
+    "adaptive.config.mts",
+    "adaptive.config.js",
+    "adaptive.config.mjs",
+    "adaptive.config.cjs",
+];
+/* ================= MAIN ================= */
+/**
+ * Resolve e importa o config do app.
+ * Retorna `{}` se não existir arquivo.
+ */
+export async function loadAdaptiveConfig(appDir) {
+    const configPath = await findConfigPath(appDir);
+    if (!configPath) {
+        return {};
+    }
+    try {
+        const mod = await importConfigModule(configPath);
+        const raw = mod.default ?? mod;
+        return normalizeConfig(raw);
+    }
+    catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        throw new Error(`[adaptive] Failed to load config at ${configPath}: ${message}`, { cause: error });
+    }
+}
+async function findConfigPath(appDir) {
+    for (const name of CONFIG_FILES) {
+        const full = path.join(appDir, name);
+        try {
+            await fs.access(full);
+            return full;
+        }
+        catch {
+            // try next
+        }
+    }
+    return null;
+}
+/**
+ * Import ESM/CJS/TS config.
+ * - .js/.mjs/.cjs → import direto
+ * - .ts/.mts → tenta jiti / tsx se existir no app ou no ci
+ */
+async function importConfigModule(configPath) {
+    const ext = path.extname(configPath).toLowerCase();
+    const href = pathToFileURL(configPath).href;
+    if (ext === ".js" || ext === ".mjs" || ext === ".cjs") {
+        return (await import(href));
+    }
+    const loader = await tryCreateTsLoader(configPath);
+    if (loader) {
+        return (await loader(configPath));
+    }
+    throw new Error(`Cannot load TypeScript config without a TS loader. ` +
+        `Install "jiti" or "tsx" in the app, or use adaptive.config.mjs instead.`);
+}
+async function tryCreateTsLoader(configPath) {
+    const appDir = path.dirname(configPath);
+    const requireFromApp = createRequire(path.join(appDir, "package.json"));
+    const requireFromCi = createRequire(import.meta.url);
+    // 1) jiti
+    for (const req of [requireFromApp, requireFromCi]) {
+        try {
+            const jitiPath = req.resolve("jiti");
+            const jitiMod = await import(pathToFileURL(jitiPath).href);
+            const createJiti = jitiMod.createJiti ?? jitiMod.default ?? jitiMod;
+            const jiti = typeof createJiti === "function"
+                ? createJiti(import.meta.url)
+                : createJiti;
+            if (jiti) {
+                return async (file) => {
+                    const loaded = typeof jiti === "function"
+                        ? jiti(file)
+                        : jiti.import
+                            ? await jiti.import(file)
+                            : null;
+                    return loaded;
+                };
+            }
+        }
+        catch {
+            // continue
+        }
+    }
+    // 2) tsx
+    try {
+        const tsxPath = requireFromApp.resolve("tsx/esm/api");
+        const tsx = await import(pathToFileURL(tsxPath).href);
+        if (typeof tsx.register === "function") {
+            tsx.register();
+        }
+        return async (file) => import(pathToFileURL(file).href + `?t=${Date.now()}`);
+    }
+    catch {
+        // continue
+    }
+    try {
+        const tsxPath = requireFromCi.resolve("tsx/esm/api");
+        const tsx = await import(pathToFileURL(tsxPath).href);
+        if (typeof tsx.register === "function") {
+            tsx.register();
+        }
+        return async (file) => import(pathToFileURL(file).href + `?t=${Date.now()}`);
+    }
+    catch {
+        // continue
+    }
+    return null;
+}
+/* ================= NORMALIZATION ================= */
+function normalizeConfig(raw) {
+    if (!raw || typeof raw !== "object") {
+        return {};
+    }
+    const input = raw;
+    const external = input.client?.external;
+    return {
+        client: {
+            external: normalizeExternal(external),
+        },
+        actions: input.actions?.allowedOrigins?.length
+            ? { allowedOrigins: [...input.actions.allowedOrigins] }
+            : undefined,
+    };
+}
+/** Resolve origens permitidas para /_action a partir de config + env. */
+export function resolveActionAllowedOrigins(config = {}) {
+    const fromConfig = config.actions?.allowedOrigins ?? [];
+    const fromEnv = (process.env.ADAPTIVE_ACTION_ALLOWED_ORIGINS ?? "")
+        .split(",")
+        .map((v) => v.trim())
+        .filter(Boolean);
+    const merged = [...fromConfig, ...fromEnv];
+    return merged.length > 0 ? merged : undefined;
+}
+function normalizeExternal(value) {
+    if (value == null)
+        return undefined;
+    const list = Array.isArray(value) ? value : [value];
+    return list.map((item, index) => {
+        if (typeof item === "string" || typeof item === "function" || item instanceof RegExp) {
+            return item;
+        }
+        if (item &&
+            typeof item === "object" &&
+            "source" in item &&
+            typeof item.source === "string") {
+            const { source, flags } = item;
+            return new RegExp(source, flags);
+        }
+        throw new Error(`[adaptive] client.external[${index}] must be string, RegExp, or function`);
+    });
+}
+//# sourceMappingURL=load-adaptive-config.js.map

@@ -1,0 +1,11 @@
+{
+  "mappings": "AAAA,SAAS,kBAAkB;AAE3B,MAAM,CAAC,eAAe,kBAAkB,WAAoB,MAAM;AAElE,OAAO,MAAM,cAAc;AAE3B,OAAO,SAAS,cAAoB;CAClC,eAAe,KAAK;;AAGtB,OAAO,SAAS,eAAqB;CACnC,eAAe,MAAM",
+  "names": [],
+  "sources": [
+    "/home/johnathan/RustroverProjects/adaptive-js/examples/Rede/src/shared/omni-hub/palette-store.ts"
+  ],
+  "version": 3,
+  "sourcesContent": [
+    "import { rootSignal } from \"@adaptive-js/web\";\n\nconst [isPaletteOpen, setPaletteOpen] = rootSignal<boolean>(false);\n\nexport const paletteOpen = isPaletteOpen;\n\nexport function openPalette(): void {\n  setPaletteOpen(true);\n}\n\nexport function closePalette(): void {\n  setPaletteOpen(false);\n}"
+  ]
+}

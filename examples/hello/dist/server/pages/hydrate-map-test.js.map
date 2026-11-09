@@ -1,0 +1,11 @@
+{
+  "mappings": "AAAA,OAAO,qBAAqB;;;;;;;AAO5B,eAAe,SAAS,qBAAqB;CACzC,OAAO,qBAAC,iBAAD,EAAmB",
+  "names": [],
+  "sources": [
+    "/home/johnathan/RustroverProjects/adaptive-js/examples/hello/src/pages/hydrate-map-test.tsx"
+  ],
+  "version": 3,
+  "sourcesContent": [
+    "import HydrateListaMap from \"../components/hydrate-lista-map\";\n\n/**\n * Test page for hydrate mode reactivity with .map() rendering varied components\n * \n * URL: /hydrate-map-test\n */\nexport default function HydrateMapTestPage() {\n    return <HydrateListaMap />;\n}\n"
+  ]
+}

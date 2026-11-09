@@ -1,0 +1,11 @@
+{
+  "mappings": "AAAA",
+  "names": [],
+  "sources": [
+    "/home/johnathan/RustroverProjects/adaptive-js/examples/Rede/src/security.ts"
+  ],
+  "version": 3,
+  "sourcesContent": [
+    "'server'\n\n/*\nimport { createSecurity } from \"@adaptive-js/extension-security\";\nimport { setSecurityPlugin } from \"@adaptive-js/adapter-nitro\";\n\n/!**\n * Security do app — secure by default.\n *\n * Em produção, troque `allowedOrigins` pelo domínio real (mesma lista do\n * `csrf.allowedOrigins` do auth em src/auth.ts).\n *\n * O handler Nitro deste toolchain é um entry fixo (não existe server/entry\n * executável), então o registro do plugin acontece aqui, no top-level de um\n * módulo 'server' que as páginas já importam via src/auth.ts. O nonce é\n * gerado após esse carregamento, garantindo header + nonce corretos.\n *!/\nexport const security = createSecurity({\n  allowedOrigins: [\n    \"http://localhost:3000\", // front (dev server do AdaptiveJS)\n    \"http://localhost:4000\", // gateway de dev\n    \"https://app.redehub.com.br\",\n  ],\n  csp: {\n    defaultSrc: [\"'self'\"],\n    scriptSrc: [\"'self'\"],\n    styleSrc: [\"'self'\", \"'unsafe-inline'\", \"https://fonts.googleapis.com\"],\n    imgSrc: [\"'self'\", \"data:\", \"https:\"],\n    fontSrc: [\"'self'\", \"https://fonts.gstatic.com\"],\n    // O front chama o gateway de dev por HTTP e WebSocket; sem estas origens\n    // o browser bloqueia o socket e os fetches.\n    connectSrc: [\n      \"'self'\",\n      \"http://localhost:4000\",\n      \"ws://localhost:4000\",\n    ],\n    frameAncestors: [\"'none'\"],\n    baseUri: [\"'self'\"],\n    formAction: [\"'self'\"],\n    objectSrc: [\"'none'\"],\n  },\n});\n\nsetSecurityPlugin(security.asNitroPlugin());*/\n"
+  ]
+}

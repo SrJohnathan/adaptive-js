@@ -1,0 +1,11 @@
+{
+  "mappings": "AAAA,SAAS,YAAY;AACrB,SAAS,gBAAgB;AACzB,SAAS,oBAAoB;;AAE7B,eAAe,KAAK,YAAY,YAAY;CAC1C,OACE,qBAAC,UAAD;EAAU,QAAO;YACf,qBAAC,cAAD,EAAgB;EACP;EAEb",
+  "names": [],
+  "sources": [
+    "/home/johnathan/RustroverProjects/adaptive-js/examples/Rede/src/pages/estudio.tsx"
+  ],
+  "version": 3,
+  "sourcesContent": [
+    "import { auth } from \"../auth\";\nimport { AppShell } from \"../components/omni-hub/app-shell\";\nimport { StudioScreen } from \"../components/omni-hub/studio-screen\";\n\nexport default auth.protectPage(async () => {\n  return (\n    <AppShell active=\"estudio-banners\">\n      <StudioScreen />\n    </AppShell>\n  );\n});"
+  ]
+}

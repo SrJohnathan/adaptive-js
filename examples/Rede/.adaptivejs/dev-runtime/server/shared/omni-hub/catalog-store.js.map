@@ -1,0 +1,11 @@
+{
+  "mappings": "AAAA,SAAS,kBAAkB;AAC3B,SAAS,wBAAwB;;;;;AAOjC,OAAO,MAAM,CAAC,UAAU,eAAe,WAA0B,iBAAiB",
+  "names": [],
+  "sources": [
+    "/home/johnathan/RustroverProjects/adaptive-js/examples/Rede/src/shared/omni-hub/catalog-store.ts"
+  ],
+  "version": 3,
+  "sourcesContent": [
+    "import { rootSignal } from \"@adaptive-js/web\";\nimport { INITIAL_PRODUCTS } from \"./mock-data\";\nimport type { ProductItem } from \"./types\";\n\n/**\n * Catálogo (produtos) é de outro serviço: enquanto ele não entra, a tela usa\n * o mock local. O chat não mexe aqui.\n */\nexport const [products, setProducts] = rootSignal<ProductItem[]>(INITIAL_PRODUCTS);\n"
+  ]
+}

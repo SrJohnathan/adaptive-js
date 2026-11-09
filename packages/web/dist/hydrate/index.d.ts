@@ -1,0 +1,5 @@
+export { renderToDOM } from "./render-to-dom.js";
+export { applyHydrationInstructions, applyHydrationInstructionsBetweenMarkers } from "./instructions.js";
+export { cleanupAdaptiveMarkersAfterSuccess, cleanupAdaptiveMarkersAfterSuccessBetweenMarkers, debugHydrationMarkers } from "./cleanup.js";
+export { getHydrationMismatches, clearHydrationMismatches } from "./mismatch.js";
+export type { HydrationInstruction, HydrateOptions, AdaptiveHydrationMismatch } from "./types.js";

@@ -1,0 +1,92 @@
+/*
+ * Copyright (c) 2026 Antonio Johnathan
+ *
+ * Licensed under the MIT License.
+ * See LICENSE file in the project root for full license information.
+ */
+import fs from "node:fs/promises";
+import path from "node:path";
+import { extractExports, getHydratableDirective, normalizeEntryId, rewriteRelativeImportExtensions, stripHydrateDirective } from "./utilly.js";
+import { transform } from "oxc-transform";
+import { applyThunkTransform } from "./thunk-transform.js";
+export class AdaptiveBuildError extends Error {
+    sourcePath;
+    errors;
+    constructor(message, sourcePath, errors) {
+        super(message);
+        this.sourcePath = sourcePath;
+        this.errors = errors;
+        this.name = "AdaptiveBuildError";
+    }
+}
+export async function buildServerFile(sourcePath, outputPath, options) {
+    await fs.mkdir(path.dirname(outputPath), { recursive: true });
+    const sourceText = await fs.readFile(sourcePath, "utf8");
+    const componentDirective = getHydratableDirective(sourceText);
+    if (componentDirective) {
+        const moduleId = normalizeEntryId(path.relative(options.srcRoot, sourcePath));
+        const ssrModulePath = outputPath.replace(/\.js$/, ".__client_ssr.js");
+        await buildTransformedFile(sourcePath, ssrModulePath, options.cwd, stripHydrateDirective(sourceText));
+        await fs.writeFile(outputPath, createServerClientStub(sourceText, moduleId, `./${path.basename(ssrModulePath)}`, componentDirective), "utf8");
+        return;
+    }
+    await buildTransformedFile(sourcePath, outputPath, options.cwd, sourceText);
+}
+async function buildTransformedFile(sourcePath, outputPath, cwd, sourceText) {
+    await fs.mkdir(path.dirname(outputPath), { recursive: true });
+    const thunked = applyThunkTransform(sourceText, sourcePath);
+    const sourceForOxc = thunked.code;
+    const result = await transform(sourcePath, sourceForOxc, {
+        cwd,
+        lang: sourcePath.endsWith(".tsx") ? "tsx" : "ts",
+        sourceType: "module",
+        sourcemap: true,
+        target: ["es2022", "node20"],
+        jsx: {
+            runtime: "automatic",
+            importSource: "@adaptive-js/web",
+        },
+        typescript: {
+            rewriteImportExtensions: "rewrite",
+        },
+    });
+    if (result.errors.length > 0) {
+        throw new AdaptiveBuildError(`Failed to transform ${sourcePath}`, sourcePath, result.errors);
+    }
+    const mapPath = `${outputPath}.map`;
+    const sourceMapComment = `//# sourceMappingURL=${path.basename(mapPath)}`;
+    const rewrittenCode = normalizePublicJsxImports(rewriteRelativeImportExtensions(result.code, sourcePath));
+    await fs.writeFile(outputPath, `${rewrittenCode}\n${sourceMapComment}\n`, "utf8");
+    if (result.map) {
+        await fs.writeFile(mapPath, JSON.stringify(result.map, null, 2), "utf8");
+    }
+}
+function createServerClientStub(sourceText, moduleId, ssrImportPath, componentDirective = "client") {
+    const { namedExports } = extractExports(sourceText);
+    const isHydrateDirective = componentDirective === "hydrate";
+    const factoryName = isHydrateDirective
+        ? "createHydrateComponent"
+        : "createClientComponent";
+    const lines = [
+        `import { ${factoryName} } from "@adaptive-js/web";`,
+    ];
+    // A implementação é passada em ambas as diretivas: quem decide se ela roda
+    // no server é a flag ADAPTIVE_ENABLED_CLIENT, avaliada dentro da factory.
+    // Assim "client" com a flag ligada renderiza igual a "hydrate".
+    lines.unshift(`import * as serverModule from ${JSON.stringify(ssrImportPath)};`);
+    lines.push(`export default ${factoryName}(${JSON.stringify(moduleId)}, "default", typeof serverModule.default === "function" ? serverModule.default : undefined);`);
+    for (const exportName of namedExports) {
+        if (exportName === "default")
+            continue;
+        lines.push(`export const ${exportName} = ${factoryName}(${JSON.stringify(moduleId)}, ${JSON.stringify(exportName)}, typeof serverModule[${JSON.stringify(exportName)}] === "function" ? serverModule[${JSON.stringify(exportName)}] : undefined);`);
+    }
+    lines.push("");
+    return lines.join("\n");
+}
+function normalizePublicJsxImports(code) {
+    return code
+        .replace(/(["'])@adaptivejs\/jsx\/jsx-runtime\1/g, `$1@adaptive-js/web/jsx-runtime$1`)
+        .replace(/(["'])@adaptivejs\/jsx\/jsx-dev-runtime\1/g, `$1@adaptive-js/web/jsx-dev-runtime$1`)
+        .replace(/(["'])@adaptivejs\/jsx\1/g, `$1@adaptive-js/web$1`);
+}
+//# sourceMappingURL=transpile-jsx.js.map

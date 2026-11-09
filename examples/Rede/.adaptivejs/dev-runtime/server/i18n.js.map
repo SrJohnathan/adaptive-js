@@ -1,0 +1,11 @@
+{
+  "mappings": "AAAA",
+  "names": [],
+  "sources": [
+    "/home/johnathan/RustroverProjects/adaptive-js/examples/Rede/src/i18n.ts"
+  ],
+  "version": 3,
+  "sourcesContent": [
+    "'server'\n/*\nimport { createI18n, defineMessages } from \"@adaptive-js/extension-i18n\";\n\n/!**\n * Mensagens embutidas para uso em UI hidratada.\n * Os JSON em /language tambem podem ser carregados no server com\n * `loadProjectLanguages` de `@adaptive-js/extension-i18n/loader`.\n *!/\nexport const messages = defineMessages({\n  en: {\n    welcome: {\n      title: \"What's happening on Rede\",\n    },\n  },\n  \"pt-br\": {\n    welcome: {\n      title: \"O que esta rolando na Rede\",\n    },\n  },\n});\n\nexport const { I18nProvider, useI18n } = createI18n({\n  locale: \"pt-br\",\n  fallbackLocale: \"en\",\n  messages,\n});*/\n"
+  ]
+}

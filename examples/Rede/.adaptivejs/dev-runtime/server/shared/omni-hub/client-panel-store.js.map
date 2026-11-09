@@ -1,0 +1,11 @@
+{
+  "mappings": "AACA,SAAS,kBAAkB;AAE3B,MAAM,CAAC,mBAAmB,sBAAsB,WAAoB,MAAM;AAE1E,OAAO,MAAM,kBAAkB;AAE/B,OAAO,SAAS,kBAAwB;CACtC,mBAAmB,KAAK;;AAG1B,OAAO,SAAS,mBAAyB;CACvC,mBAAmB,MAAM;;AAG3B,OAAO,SAAS,oBAA0B;CACxC,QAAQ,IAAI,mBAAmB,CAAC;CAChC,oBAAoB,SAAS,CAAC,KAAK",
+  "names": [],
+  "sources": [
+    "/home/johnathan/RustroverProjects/adaptive-js/examples/Rede/src/shared/omni-hub/client-panel-store.ts"
+  ],
+  "version": 3,
+  "sourcesContent": [
+    "\nimport { rootSignal } from \"@adaptive-js/web\";\n\nconst [isClientPanelOpen, setClientPanelOpen] = rootSignal<boolean>(false);\n\nexport const clientPanelOpen = isClientPanelOpen;\n\nexport function openClientPanel(): void {\n  setClientPanelOpen(true);\n}\n\nexport function closeClientPanel(): void {\n  setClientPanelOpen(false);\n}\n\nexport function toggleClientPanel(): void {\n  console.log(isClientPanelOpen());\n  setClientPanelOpen((open) => !open);\n}\n"
+  ]
+}

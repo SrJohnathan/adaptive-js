@@ -1,0 +1,10 @@
+import type { AuthCookieOptions, AuthCookieResult, AuthRequestLike } from "./types.js";
+export declare const DEFAULT_AUTH_COOKIE_NAME = "__Host-adaptive-session";
+export declare const DEFAULT_AUTH_COOKIE_OPTIONS: Required<Pick<AuthCookieOptions, "path" | "sameSite" | "secure" | "httpOnly">>;
+export declare function validateCookieOptions(name?: string, options?: AuthCookieOptions, isProduction?: boolean): void;
+export declare function readCookieHeader(source: AuthRequestLike | Headers | Record<string, string | string[] | undefined> | string): string;
+export declare function parseCookies(cookieHeader: string): Record<string, string>;
+export declare function getCookie(source: AuthRequestLike | Headers | Record<string, string | string[] | undefined> | string, name: string): string;
+export declare function serializeCookie(name: string, value: string, options?: AuthCookieOptions): string;
+export declare function createSessionCookie(sessionId: string, options?: AuthCookieOptions): AuthCookieResult;
+export declare function createBlankSessionCookie(options?: AuthCookieOptions): AuthCookieResult;

@@ -1,0 +1,9 @@
+[
+  "auth",
+  "config/auth-service",
+  "i18n",
+  "security",
+  "shared/server-actions/auth",
+  "shared/server-actions/feed",
+  "shared/server-actions/realtime"
+]

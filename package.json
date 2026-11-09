@@ -1,0 +1,25 @@
+{
+  "name": "adaptive-js",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "lint": "oxlint packages",
+    "lint:fix": "oxlint packages --fix",
+    "test": "tsc -p tsconfig.test.json && node --test dist-test/*.test.js",
+    "test:watch": "node --test --watch dist-test/*.test.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "workspaces": [
+    "packages/*",
+    "examples/*",
+    "create-adaptive-app",
+    "extension/*"
+  ],
+  "devDependencies": {
+    "oxlint": "^1.80.0"
+  }
+}

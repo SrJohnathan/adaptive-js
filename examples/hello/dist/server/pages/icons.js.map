@@ -1,0 +1,11 @@
+{
+  "mappings": "AAAA,SAAS,2BAA2B;;AAEpC,eAAe,SAAS,YAAY;CAChC,OACI,4CACI,qBAAC,qBAAD,EAAuB,GACxB",
+  "names": [],
+  "sources": [
+    "/home/johnathan/RustroverProjects/adaptive-js/examples/hello/src/pages/icons.tsx"
+  ],
+  "version": 3,
+  "sourcesContent": [
+    "import { LucideIconsShowcase } from \"../components/lucide-icons-showcase\";\n\nexport default function IconsPage() {\n    return (\n        <>\n            <LucideIconsShowcase />\n        </>\n    );\n}\n"
+  ]
+}

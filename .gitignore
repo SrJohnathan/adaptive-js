@@ -1,0 +1,7 @@
+# Dependências
+node_modules/
+dist-test/
+.idea/
+dev.log
+*.log
+.DS_Store

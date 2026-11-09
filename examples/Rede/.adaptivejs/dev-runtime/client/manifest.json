@@ -1,0 +1,21 @@
+{
+  "components/chatscreen/list-contects": "/assets/entry-0e_TSAo6.js",
+  "components/omni-hub/studio-screen": "/assets/entry-BAqsQO9i.js",
+  "components/chatscreen/ai-chat-panel": "/assets/entry-BcFVgC8B.js",
+  "components/chatscreen/list-message": "/assets/entry-C-a-CV93.js",
+  "components/omni-hub/command-palette": "/assets/entry-CQJj3BXs.js",
+  "components/omni-hub/chat-screen": "/assets/entry-CUT_3h4S.js",
+  "components/omni-hub/storage-screen": "/assets/entry-CxMgTkT1.js",
+  "components/omni-hub/sidebar": "/assets/entry-CzlquQro.js",
+  "components/omni-hub/quick-nav-fab": "/assets/entry-D-bPUfJl.js",
+  "features/theme/theme-controller": "/assets/entry-DMAmEGwL.js",
+  "components/omni-hub/account-screen": "/assets/entry-DOlHeO_W.js",
+  "components/omni-hub/toast-container": "/assets/entry-DZeoMgQP.js",
+  "features/chat/ContextSocket": "/assets/entry-DoVVkfum.js",
+  "dependency": "/assets/entry-DsWFU0x-.js",
+  "components/omni-hub/catalog-screen": "/assets/entry-IgUPITn3.js",
+  "components/omni-hub/header": "/assets/entry-MYnYknRw.js",
+  "components/omni-hub/auth-screen": "/assets/entry-ZVaPeHmG.js",
+  "components/chatscreen/drawer-contact": "/assets/entry-fY7-Rs6_.js",
+  "features/theme/theme-icons": "/assets/entry-uiJvfVlJ.js"
+}

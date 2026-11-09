@@ -1,0 +1,1 @@
+typeof window<`u`&&(window.__ADAPTIVE_DEBUG_HYDRATION__=!0);

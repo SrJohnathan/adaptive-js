@@ -1,0 +1,8 @@
+import { n as hydrateClientComponents } from "./chunk-i_LCywE4.js";
+import { n as client_exports } from "./chunk-DN-WYAzQ.js";
+
+//#region .adaptive-temp/dev-runtime-1791415595625-cveadg/temp/client-components/components__client.tsx
+hydrateClientComponents("components/client", client_exports);
+
+//#endregion
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZW50cnktQjJqdHJhLVAuanMiLCJuYW1lcyI6WyJjbGllbnRNb2R1bGUiXSwic291cmNlcyI6WyIuLi8uLi90ZW1wL2NsaWVudC1jb21wb25lbnRzL2NvbXBvbmVudHNfX2NsaWVudC50c3giXSwic291cmNlc0NvbnRlbnQiOlsiXG5pbXBvcnQgKiBhcyBjbGllbnRNb2R1bGUgZnJvbSBcIi4uLy4uLy4uLy4uL3NyYy9jb21wb25lbnRzL2NsaWVudC50c3hcIjtcbmltcG9ydCB7IGh5ZHJhdGVDbGllbnRDb21wb25lbnRzIH0gZnJvbSBcIkBhZGFwdGl2ZS1qcy93ZWJcIjtcblxuaHlkcmF0ZUNsaWVudENvbXBvbmVudHMoXCJjb21wb25lbnRzL2NsaWVudFwiLCBjbGllbnRNb2R1bGUpO1xuZXhwb3J0IHt9O1xuIl0sIm1hcHBpbmdzIjoiOzs7O0FBSUEsd0JBQXdCLHFCQUFxQkEsY0FBWSJ9

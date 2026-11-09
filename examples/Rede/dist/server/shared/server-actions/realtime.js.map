@@ -1,0 +1,11 @@
+{
+  "mappings": "AAAA;AAEA,SAAS,YAAY;;;;;;;;;AAkBrB,OAAO,eAAe,0BACpB,SAC8B;CAC9B,MAAM,OAAO,MAAM,KAAK,YAAY,SAAS,WAAW,EAAE,SAAS,EAAE,EAAE,CAAC;CACxE,MAAM,UAAU,KAAK;CAErB,IAAI,CAAC,SAAS;EACZ,OAAO;GAAE,OAAO;GAAI,MAAM;GAAI,OAAO;GAAI;;CAG3C,OAAO;EACL,OAAO,QAAQ,MAAM,aAAa;EAClC,MAAM,QAAQ,MAAM,QAAQ;EAC5B,OAAO,QAAQ,MAAM,SAAS;EAC/B",
+  "names": [],
+  "sources": [
+    "/home/johnathan/RustroverProjects/adaptive-js/examples/Rede/src/shared/server-actions/realtime.ts"
+  ],
+  "version": 3,
+  "sourcesContent": [
+    "\"server\";\n\nimport { auth } from \"../../auth.ts\";\n\nexport interface RealtimeCredentials {\n  /** Token do microserviço de auth (vai no handshake do Socket.IO). */\n  token: string;\n  /** Nome do agente logado, exibido no `session:ready`. */\n  user: string;\n  email: string;\n}\n\n/**\n * Server action que expõe, apenas para o cliente autenticado, o token do\n * microserviço de auth e os dados do agente logado.\n *\n * O token nunca é lido do cookie no browser: ele é resolvido no servidor a\n * partir da sessão AdaptiveJS e devolvido por RPC, mantendo a checagem de\n * sessão no server (o realtime valida o mesmo token em `GET /api/v1/auth/me`).\n */\nexport async function realtimeCredentialsAction(\n  context?: any,\n): Promise<RealtimeCredentials> {\n  const read = await auth.readSession(context?.request ?? { headers: {} });\n  const session = read.session;\n\n  if (!session) {\n    return { token: \"\", user: \"\", email: \"\" };\n  }\n\n  return {\n    token: session.data?.authToken ?? \"\",\n    user: session.user?.name ?? \"\",\n    email: session.user?.email ?? \"\",\n  };\n}\n"
+  ]
+}

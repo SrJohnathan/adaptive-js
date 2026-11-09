@@ -1,0 +1,29 @@
+{
+  "name": "@adaptive-js/runtime",
+  "version": "0.0.1",
+  "description": " runtime helpers used across AdaptiveJS packages.",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@adaptive-js/shared": "0.0.1",
+    "@adaptive-js/ssr": "0.0.1"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3",
+    "@types/node": "^25.6.0"
+  }
+}

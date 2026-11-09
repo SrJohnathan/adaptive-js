@@ -1,0 +1,11 @@
+{
+  "mappings": "AAAA,SAAS,gBAAgB;AACzB,SAAS,kBAAkB;AAC3B,SAAQ,qBAAoB;;;;AAI5B,eAAe,eAAe,YAAY;CACxC,OACE,qBAAC,UAAD;EAAU,QAAO;YAEb,qBAAC,eAAD,YACI,qBAAC,YAAD,EAAc,GACF;EAGT",
+  "names": [],
+  "sources": [
+    "/home/johnathan/RustroverProjects/adaptive-js/examples/Rede/src/pages/index.tsx"
+  ],
+  "version": 3,
+  "sourcesContent": [
+    "import { AppShell } from \"../components/omni-hub/app-shell\";\nimport { ChatScreen } from \"../components/omni-hub/chat-screen\";\nimport {ContextSocket} from \"../features/chat/ContextSocket\";\n\n// `auth.protectPage` desativado por enquanto: o hydration do RecyclerView\n// precisa ser inspecionado sem passar pela sessão.\nexport default async function IndexPage() {\n  return (\n    <AppShell active=\"chat-omnichannel\">\n\n        <ContextSocket>\n            <ChatScreen />\n        </ContextSocket>\n\n        \n    </AppShell>\n  );\n}\n"
+  ]
+}

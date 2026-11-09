@@ -1,0 +1,117 @@
+export type ScreenType =
+  | "chat-omnichannel"
+  | "catalogo-erp"
+  | "estudio-banners"
+  | "armazenamento-midias"
+  | "configuracoes-conta"
+  | "autenticacao";
+
+export const SCREEN_ROUTES: Record<ScreenType, string> = {
+  "chat-omnichannel": "/",
+  "catalogo-erp": "/catalogo",
+  "estudio-banners": "/estudio",
+  "armazenamento-midias": "/armazenamento-midias",
+  "configuracoes-conta": "/conta",
+  "autenticacao": "/autenticacao",
+};
+
+export type ToastType = "success" | "info" | "warning" | "error";
+
+export interface ToastItem {
+  id: string;
+  title: string;
+  message: string;
+  type: ToastType;
+}
+
+export interface ProductItem {
+  id: string;
+  name: string;
+  sku: string;
+  category: string;
+  stockText: string;
+  ifoodPrice: string;
+  balcaoPrice: string;
+  marginText: string;
+  ratingBadge?: string;
+  tag?: string;
+  tagType?: "badge" | "warning" | "combo" | "pause";
+  image: string;
+  activeInIfood: boolean;
+  lowStock?: boolean;
+}
+
+export interface ChatMessage {
+  id: string;
+  sender: "client" | "agent" | "system";
+  senderName?: string;
+  text: string;
+  time: string;
+  /** Epoch em segundos, do servidor. Falta nas mensagens montadas na hora pelo front. */
+  sentAt?: number;
+  status?: string;
+  isOrderCard?: boolean;
+  orderInfo?: {
+    orderNumber: string;
+    status: string;
+    total: string;
+    items: { name: string; price: string }[];
+    notes?: string;
+    eta: string;
+  };
+  isDessertCard?: boolean;
+  dessertInfo?: {
+    title: string;
+    desc: string;
+    price: string;
+    image: string;
+  };
+}
+
+export interface ConversationItem {
+  id: string;
+  clientName: string;
+  avatar: string;
+  channel: "whatsapp" | "instagram" | "telegram" | "messenger";
+  channelBadgeText: string;
+  time: string;
+  lastMessage: string;
+  /** Última alteração da conversa no servidor: ordena payload velho contra novo. */
+  updatedAt?: number;
+  unreadCount?: number;
+  vipStatus?: string;
+  orderRef?: string;
+  phone: string;
+  slaTime: string;
+  totalSpentMonth: string;
+  completedOrdersCount: number;
+  avgTicket: string;
+  address: string;
+  sentimentPercent: number;
+  notes: string;
+  messages: ChatMessage[];
+}
+
+export interface BannerItem {
+  id: string;
+  code: string;
+  title: string;
+  campaignType: string;
+  channel: "whatsapp" | "instagram" | "ifood" | "web";
+  channelLabel: string;
+  statusBadge: string;
+  metric1Label: string;
+  metric1Value: string;
+  metric2Label: string;
+  metric2Value: string;
+  image: string;
+}
+
+export interface StudioVariation {
+  id: string;
+  formatTag: string;
+  badgeText: string;
+  title: string;
+  subtitle: string;
+  image: string;
+}

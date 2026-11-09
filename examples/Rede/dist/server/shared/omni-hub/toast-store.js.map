@@ -1,0 +1,11 @@
+{
+  "mappings": "AAAA,SAAS,kBAAkB;AAG3B,MAAM,CAAC,cAAc,aAAa,WAAwB,EAAE,CAAC;AAE7D,OAAO,MAAM,SAAS;AAEtB,OAAO,SAAS,UACd,OACA,SACA,OAAkB,WACZ;CACN,MAAM,KAAK,KAAK,QAAQ,CAAC,SAAS,GAAG,CAAC,MAAM,GAAG,EAAE;CACjD,WAAW,SAAS,CAAC,GAAG,MAAM;EAAE;EAAI;EAAO;EAAS;EAAM,CAAC,CAAC;CAC5D,iBAAiB;EACf,WAAW,SAAS,KAAK,QAAQ,UAAU,MAAM,OAAO,GAAG,CAAC;IAC3D,KAAK",
+  "names": [],
+  "sources": [
+    "/home/johnathan/RustroverProjects/adaptive-js/examples/Rede/src/shared/omni-hub/toast-store.ts"
+  ],
+  "version": 3,
+  "sourcesContent": [
+    "import { rootSignal } from \"@adaptive-js/web\";\nimport type { ToastItem, ToastType } from \"./types\";\n\nconst [toastsSignal, setToasts] = rootSignal<ToastItem[]>([]);\n\nexport const toasts = toastsSignal;\n\nexport function showToast(\n  title: string,\n  message: string,\n  type: ToastType = \"success\",\n): void {\n  const id = Math.random().toString(36).slice(2, 9);\n  setToasts((prev) => [...prev, { id, title, message, type }]);\n  setTimeout(() => {\n    setToasts((prev) => prev.filter((toast) => toast.id !== id));\n  }, 3500);\n}"
+  ]
+}

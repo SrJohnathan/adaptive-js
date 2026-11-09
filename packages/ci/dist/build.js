@@ -1,0 +1,454 @@
+/*
+ * Copyright (c) 2026 Antonio Johnathan
+ * Licensed under the MIT License.
+ */
+import { existsSync } from "node:fs";
+import fs from "node:fs/promises";
+import path from "node:path";
+import { createRequire } from "node:module";
+import { pathToFileURL } from "node:url";
+import { brotliCompressSync, constants, gzipSync } from "node:zlib";
+import { createClientEnvDefine, getPublicEnv, } from "./env-loader.js";
+import { bundleClientEntries, writeServerModulesManifest } from "./esm-rolldown.js";
+import { buildServerFile } from "./transpile-jsx.js";
+import { loadAdaptiveConfig } from "./load-adaptive-config.js";
+import { notifyLiveReload } from "./live-reload.js";
+export async function buildApp(appDir, options = {}) {
+    const isDev = options.dev === true;
+    const srcDir = path.join(appDir, "src");
+    const distDir = path.join(appDir, "dist");
+    const serverDistDir = path.join(distDir, "server");
+    const clientDistDir = path.join(distDir, "client");
+    const tempDir = path.join(appDir, ".adaptive-temp");
+    await rmWithRetries(distDir);
+    await rmWithRetries(tempDir);
+    await Promise.all([
+        fs.mkdir(serverDistDir, { recursive: true }),
+        fs.mkdir(clientDistDir, { recursive: true }),
+        fs.mkdir(tempDir, { recursive: true }),
+    ]);
+    await buildTree(srcDir, serverDistDir, {
+        cwd: appDir,
+        srcRoot: srcDir,
+    });
+    await writeServerModulesManifest(srcDir, serverDistDir);
+    await copyFileIfExists(path.join(appDir, "index.html"), path.join(clientDistDir, "index.html"));
+    await copyDir(path.join(appDir, "public"), clientDistDir);
+    await processCssAssets(clientDistDir, appDir);
+    const config = await loadAdaptiveConfig(appDir);
+    const external = options.external ?? config.client?.external;
+    await bundleClientEntries({
+        appDir,
+        srcDir,
+        clientDistDir,
+        tempDir,
+        dev: isDev,
+        define: createClientEnvDefine(options.publicEnv ?? getPublicEnv()),
+        external
+    });
+    await writeBuildMetadata(clientDistDir, { dev: isDev });
+    if (!isDev) {
+        await minifyStaticAssets(clientDistDir);
+        await compressAssets(clientDistDir);
+    }
+    await rmWithRetries(tempDir);
+}
+export async function buildAppDev(appDir) {
+    const srcDir = path.join(appDir, "src");
+    const adaptiveDir = path.join(appDir, ".adaptivejs");
+    const devRuntimeDir = path.join(adaptiveDir, "dev-runtime");
+    const serverDistDir = path.join(devRuntimeDir, "server");
+    const clientDistDir = path.join(devRuntimeDir, "client");
+    const tempDir = path.join(appDir, ".adaptive-temp");
+    const uniqueId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const stagedDistDir = path.join(tempDir, `dev-runtime-${uniqueId}`);
+    const stagedServerDistDir = path.join(stagedDistDir, "server");
+    const stagedClientDistDir = path.join(stagedDistDir, "client");
+    const stagedTempDir = path.join(stagedDistDir, "temp");
+    await rmWithRetries(stagedDistDir);
+    await Promise.all([
+        fs.mkdir(stagedServerDistDir, { recursive: true }),
+        fs.mkdir(stagedClientDistDir, { recursive: true }),
+        fs.mkdir(stagedTempDir, { recursive: true }),
+        fs.mkdir(adaptiveDir, { recursive: true }),
+        fs.mkdir(tempDir, { recursive: true }),
+    ]);
+    try {
+        await buildTree(srcDir, stagedServerDistDir, {
+            cwd: appDir,
+            srcRoot: srcDir,
+        });
+        await writeServerModulesManifest(srcDir, stagedServerDistDir);
+        await copyFileIfExists(path.join(appDir, "index.html"), path.join(stagedClientDistDir, "index.html"));
+        await copyDir(path.join(appDir, "public"), stagedClientDistDir);
+        await processCssAssets(stagedClientDistDir, appDir);
+        const config = await loadAdaptiveConfig(appDir);
+        await bundleClientEntries({
+            appDir,
+            srcDir,
+            clientDistDir: stagedClientDistDir,
+            tempDir: stagedTempDir,
+            dev: true,
+            external: config.client?.external
+        });
+        const metadata = await writeBuildMetadata(stagedClientDistDir, { dev: true });
+        await appendDevImportVersion(stagedServerDistDir, metadata.buildId);
+        await fs.mkdir(devRuntimeDir, { recursive: true });
+        const backupServerDistDir = path.join(tempDir, `server-old-${uniqueId}`);
+        const backupClientDistDir = path.join(tempDir, `client-old-${uniqueId}`);
+        await swapDir(serverDistDir, stagedServerDistDir, backupServerDistDir);
+        await swapDir(clientDistDir, stagedClientDistDir, backupClientDistDir);
+        notifyLiveReload(metadata.buildId);
+        await Promise.all([
+            rmWithRetries(backupServerDistDir),
+            rmWithRetries(backupClientDistDir),
+        ]);
+    }
+    finally {
+        await rmWithRetries(stagedDistDir);
+    }
+}
+export async function buildAppDevIncremental(appDir, changes) {
+    const srcDir = path.join(appDir, "src");
+    const devRuntimeDir = path.join(appDir, ".adaptivejs", "dev-runtime");
+    const serverDistDir = path.join(devRuntimeDir, "server");
+    for (const change of changes) {
+        const normalizedFilePath = change.filePath.replace(/\\/g, "/");
+        if (!normalizedFilePath.startsWith("src/")) {
+            continue;
+        }
+        const absolutePath = path.join(appDir, change.filePath);
+        const relativeSrcPath = normalizedFilePath.slice("src/".length);
+        if (relativeSrcPath.startsWith("..") ||
+            path.isAbsolute(relativeSrcPath)) {
+            continue;
+        }
+        const targetPath = path.join(serverDistDir, relativeSrcPath);
+        if (change.eventType === "rename") {
+            if (existsSync(absolutePath)) {
+                await buildIncrementalServerFile(absolutePath, targetPath, appDir, srcDir);
+            }
+            else {
+                await fs.rm(targetPath.replace(/\.(ts|tsx)$/, ".js"), { force: true });
+            }
+            continue;
+        }
+        if (!existsSync(absolutePath)) {
+            continue;
+        }
+        await buildIncrementalServerFile(absolutePath, targetPath, appDir, srcDir);
+    }
+}
+async function buildIncrementalServerFile(sourcePath, targetPath, appDir, srcDir) {
+    const relativePath = path.relative(srcDir, sourcePath);
+    if (relativePath.endsWith(".d.ts")) {
+        return;
+    }
+    await fs.mkdir(path.dirname(targetPath), {
+        recursive: true,
+    });
+    if (/\.(ts|tsx)$/.test(sourcePath)) {
+        await buildServerFile(sourcePath, targetPath.replace(/\.(ts|tsx)$/, ".js"), {
+            cwd: appDir,
+            srcRoot: srcDir,
+        });
+        return;
+    }
+    await fs.copyFile(sourcePath, targetPath);
+}
+/**
+ * Substitui `targetDir` pelo conteúdo de `stagedDir` sem nunca deixar
+ * `targetDir` inexistente: primeiro move o `targetDir` atual (se existir)
+ * para `backupDir`, depois move `stagedDir` para `targetDir`.
+ */
+async function swapDir(targetDir, stagedDir, backupDir) {
+    let hadPrevious = true;
+    try {
+        await fs.rename(targetDir, backupDir);
+    }
+    catch (error) {
+        if (isErrnoCode(error, "ENOENT")) {
+            hadPrevious = false;
+        }
+        else {
+            throw error;
+        }
+    }
+    try {
+        await fs.rename(stagedDir, targetDir);
+    }
+    catch (error) {
+        // Se a nova build não puder ser movida para o lugar, restaura o backup
+        // para não deixar o dev server sem nenhuma versão funcional.
+        if (hadPrevious) {
+            await fs.rename(backupDir, targetDir).catch(() => { });
+        }
+        throw error;
+    }
+}
+async function buildTree(fromDir, toDir, options) {
+    const entries = await fs.readdir(fromDir, {
+        withFileTypes: true,
+    });
+    for (const entry of entries) {
+        if (entry.name.endsWith('~') || entry.name.endsWith('.swp') || entry.name.startsWith('._')) {
+            continue;
+        }
+        const sourcePath = path.join(fromDir, entry.name);
+        const targetPath = path.join(toDir, entry.name);
+        if (entry.isDirectory()) {
+            await fs.mkdir(targetPath, { recursive: true });
+            await buildTree(sourcePath, targetPath, options);
+            continue;
+        }
+        // 2. ADICIONAR UM TRY/CATCH DE TIMING PARA GARANTIR COMPATIBILIDADE COM O WATCHER
+        try {
+            if (/\.(ts|tsx)$/.test(entry.name) && !entry.name.endsWith(".d.ts")) {
+                await buildServerFile(sourcePath, targetPath.replace(/\.(ts|tsx)$/, ".js"), options);
+            }
+            else {
+                await fs.copyFile(sourcePath, targetPath);
+            }
+        }
+        catch (error) {
+            // Se o arquivo sumiu entre o readdir e a execução (clássico em watchers rápidos), ignora suavemente
+            if (error.code === 'ENOENT') {
+                continue;
+            }
+            throw error; // Se for outro erro crítico de permissão ou disco, repassa
+        }
+    }
+}
+async function rmWithRetries(targetPath, attempts = 6) {
+    for (let i = 1; i <= attempts; i++) {
+        try {
+            await fs.rm(targetPath, {
+                recursive: true,
+                force: true,
+            });
+            return;
+        }
+        catch (error) {
+            if (!isRetryableRmError(error) || i === attempts) {
+                throw error;
+            }
+            await delay(i * 120);
+        }
+    }
+}
+function isRetryableRmError(error) {
+    return isErrnoCode(error, "EBUSY") || isErrnoCode(error, "EPERM");
+}
+function delay(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+function isErrnoCode(error, code) {
+    return (typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        error.code === code);
+}
+async function copyFileIfExists(from, to) {
+    try {
+        await fs.mkdir(path.dirname(to), { recursive: true });
+        await fs.copyFile(from, to);
+    }
+    catch (error) {
+        if (isErrnoCode(error, "ENOENT"))
+            return;
+        throw error;
+    }
+}
+async function copyDir(from, to) {
+    try {
+        const entries = await fs.readdir(from, {
+            withFileTypes: true,
+        });
+        for (const entry of entries) {
+            const src = path.join(from, entry.name);
+            const dest = path.join(to, entry.name);
+            if (entry.isDirectory()) {
+                await fs.mkdir(dest, { recursive: true });
+                await copyDir(src, dest);
+            }
+            else {
+                await fs.mkdir(path.dirname(dest), {
+                    recursive: true,
+                });
+                await fs.copyFile(src, dest);
+            }
+        }
+    }
+    catch (error) {
+        if (isErrnoCode(error, "ENOENT"))
+            return;
+        throw error;
+    }
+}
+async function writeBuildMetadata(dir, options) {
+    const metadata = {
+        buildId: `${Date.now()}`,
+        mode: options.dev ? "development" : "production",
+    };
+    await fs.writeFile(path.join(dir, "build-meta.json"), JSON.stringify(metadata, null, 2));
+    return metadata;
+}
+async function appendDevImportVersion(dir, buildId) {
+    const entries = await fs.readdir(dir, { withFileTypes: true });
+    for (const entry of entries) {
+        const fullPath = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+            await appendDevImportVersion(fullPath, buildId);
+            continue;
+        }
+        if (!entry.name.endsWith(".js")) {
+            continue;
+        }
+        const source = await fs.readFile(fullPath, "utf8");
+        const next = source
+            .replace(/(from\s+["'])(\.{1,2}\/[^"']+\.js)(["'])/g, (_match, start, specifier, end) => `${start}${appendQueryToImport(specifier, buildId)}${end}`)
+            .replace(/(import\s*\(\s*["'])(\.{1,2}\/[^"']+\.js)(["']\s*\))/g, (_match, start, specifier, end) => `${start}${appendQueryToImport(specifier, buildId)}${end}`);
+        if (next !== source) {
+            await fs.writeFile(fullPath, next, "utf8");
+        }
+    }
+}
+function appendQueryToImport(specifier, buildId) {
+    if (specifier.includes("?")) {
+        return specifier;
+    }
+    return `${specifier}?t=${buildId}`;
+}
+async function minifyStaticAssets(dir) {
+    const entries = await fs.readdir(dir, {
+        withFileTypes: true,
+    });
+    for (const entry of entries) {
+        const full = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+            await minifyStaticAssets(full);
+            continue;
+        }
+        if (!entry.name.endsWith(".css"))
+            continue;
+        const css = await fs.readFile(full, "utf8");
+        const minified = css
+            .replace(/\/\*[\s\S]*?\*\//g, "")
+            .replace(/\s+/g, " ")
+            .replace(/\s*([{}:;,])\s*/g, "$1")
+            .replace(/;}/g, "}")
+            .trim();
+        await fs.writeFile(full, minified);
+    }
+}
+async function compressAssets(dir) {
+    const entries = await fs.readdir(dir, {
+        withFileTypes: true,
+    });
+    for (const entry of entries) {
+        const full = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+            await compressAssets(full);
+            continue;
+        }
+        if (!/\.(js|css|html|svg|json)$/.test(entry.name))
+            continue;
+        let content;
+        try {
+            content = await fs.readFile(full);
+        }
+        catch (error) {
+            if (isErrnoCode(error, "ENOENT"))
+                continue;
+            throw error;
+        }
+        await fs.writeFile(`${full}.gz`, gzipSync(content));
+        await fs.writeFile(`${full}.br`, brotliCompressSync(content, {
+            params: {
+                [constants.BROTLI_PARAM_QUALITY]: 11,
+            },
+        }));
+    }
+}
+async function processCssAssets(dir, appDir) {
+    let entries;
+    try {
+        entries = await fs.readdir(dir, {
+            withFileTypes: true,
+        });
+    }
+    catch (error) {
+        if (isErrnoCode(error, "ENOENT"))
+            return;
+        throw error;
+    }
+    for (const entry of entries) {
+        const full = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+            await processCssAssets(full, appDir);
+            continue;
+        }
+        if (!entry.name.endsWith(".css")) {
+            continue;
+        }
+        let source;
+        try {
+            source = await fs.readFile(full, "utf8");
+        }
+        catch (error) {
+            if (isErrnoCode(error, "ENOENT"))
+                continue;
+            throw error;
+        }
+        if (!shouldProcessWithTailwind(source)) {
+            continue;
+        }
+        const processor = await loadTailwindCssProcessor(appDir);
+        if (!processor) {
+            console.warn(`[adaptive] Tailwind directives found in ${path.relative(appDir, full)}, but Tailwind/PostCSS are not installed in this app. CSS was copied without processing.`);
+            continue;
+        }
+        const result = await processor.process(source, {
+            from: full,
+            to: full,
+        });
+        try {
+            await fs.mkdir(path.dirname(full), { recursive: true });
+            await fs.writeFile(full, result.css, "utf8");
+        }
+        catch (error) {
+            if (isErrnoCode(error, "ENOENT"))
+                continue;
+            throw error;
+        }
+    }
+}
+function shouldProcessWithTailwind(source) {
+    return (source.includes('@import "tailwindcss"') ||
+        source.includes("@import 'tailwindcss'") ||
+        source.includes("@tailwind") ||
+        source.includes("@theme") ||
+        source.includes("@utility") ||
+        source.includes("@variant") ||
+        source.includes("@source"));
+}
+async function loadTailwindCssProcessor(appDir) {
+    try {
+        const requireFromApp = createRequire(path.join(appDir, "package.json"));
+        const postcssModulePath = requireFromApp.resolve("postcss");
+        const tailwindModulePath = requireFromApp.resolve("@tailwindcss/postcss");
+        const postcssModule = await import(pathToFileURL(postcssModulePath).href);
+        const tailwindModule = await import(pathToFileURL(tailwindModulePath).href);
+        const postcss = postcssModule.default ?? postcssModule;
+        const tailwindcss = tailwindModule.default ?? tailwindModule;
+        return {
+            process(source, options) {
+                return postcss([tailwindcss()]).process(source, options);
+            },
+        };
+    }
+    catch {
+        return null;
+    }
+}
+//# sourceMappingURL=build.js.map

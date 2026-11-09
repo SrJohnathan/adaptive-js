@@ -1,0 +1,42 @@
+{
+  "name": "@adaptive-js/ci",
+  "version": "0.0.1",
+  "description": "Build and development tooling for AdaptiveJS applications.",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "adaptive": "./dist/index.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./dev": {
+      "types": "./dist/dev/index.d.ts",
+      "import": "./dist/dev/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@adaptive-js/core": "0.0.1",
+    "@adaptive-js/runtime": "0.0.1",
+    "@adaptive-js/shared": "0.0.1",
+    "@adaptive-js/jsx": "0.0.1",
+    "oxc-transform": "^0.128.0",
+    "rolldown": "^1.2.6",
+    "chokidar": "^5.0.0",
+    "h3": "^2.0.1-rc.21"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "typescript": "^6.0.3"
+  }
+}

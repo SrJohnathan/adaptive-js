@@ -1,0 +1,97 @@
+{
+  "components/chatscreen/list-contects": {
+    "script": "/assets/entry-0e_TSAo6.js",
+    "styles": [],
+    "global": false
+  },
+  "components/omni-hub/studio-screen": {
+    "script": "/assets/entry-BAqsQO9i.js",
+    "styles": [],
+    "global": false
+  },
+  "components/chatscreen/ai-chat-panel": {
+    "script": "/assets/entry-BcFVgC8B.js",
+    "styles": [],
+    "global": false
+  },
+  "components/chatscreen/list-message": {
+    "script": "/assets/entry-C-a-CV93.js",
+    "styles": [],
+    "global": false
+  },
+  "components/omni-hub/command-palette": {
+    "script": "/assets/entry-CQJj3BXs.js",
+    "styles": [],
+    "global": false
+  },
+  "components/omni-hub/chat-screen": {
+    "script": "/assets/entry-CUT_3h4S.js",
+    "styles": [],
+    "global": false
+  },
+  "components/omni-hub/storage-screen": {
+    "script": "/assets/entry-CxMgTkT1.js",
+    "styles": [],
+    "global": false
+  },
+  "components/omni-hub/sidebar": {
+    "script": "/assets/entry-CzlquQro.js",
+    "styles": [],
+    "global": false
+  },
+  "components/omni-hub/quick-nav-fab": {
+    "script": "/assets/entry-D-bPUfJl.js",
+    "styles": [],
+    "global": false
+  },
+  "features/theme/theme-controller": {
+    "script": "/assets/entry-DMAmEGwL.js",
+    "styles": [],
+    "global": false
+  },
+  "components/omni-hub/account-screen": {
+    "script": "/assets/entry-DOlHeO_W.js",
+    "styles": [],
+    "global": false
+  },
+  "components/omni-hub/toast-container": {
+    "script": "/assets/entry-DZeoMgQP.js",
+    "styles": [],
+    "global": false
+  },
+  "features/chat/ContextSocket": {
+    "script": "/assets/entry-DoVVkfum.js",
+    "styles": [],
+    "global": false
+  },
+  "dependency": {
+    "script": "/assets/entry-DsWFU0x-.js",
+    "styles": [],
+    "global": true
+  },
+  "components/omni-hub/catalog-screen": {
+    "script": "/assets/entry-IgUPITn3.js",
+    "styles": [],
+    "global": false
+  },
+  "components/omni-hub/header": {
+    "script": "/assets/entry-MYnYknRw.js",
+    "styles": [],
+    "global": false
+  },
+  "components/omni-hub/auth-screen": {
+    "script": "/assets/entry-ZVaPeHmG.js",
+    "styles": [],
+    "global": false
+  },
+  "components/chatscreen/drawer-contact": {
+    "script": "/assets/entry-fY7-Rs6_.js",
+    "styles": [],
+    "global": false
+  },
+  "features/theme/theme-icons": {
+    "script": "/assets/entry-uiJvfVlJ.js",
+    "styles": [],
+    "global": false
+  }
+}

@@ -1,0 +1,1 @@
+import{c as e}from"./chunk-DgnDx5kT.js";const[t,n]=e([]),r=t;function i(e,t,r=`success`){let i=Math.random().toString(36).slice(2,9);n(n=>[...n,{id:i,title:e,message:t,type:r}]),setTimeout(()=>{n(e=>e.filter(e=>e.id!==i))},3500)}export{r as n,i as t};

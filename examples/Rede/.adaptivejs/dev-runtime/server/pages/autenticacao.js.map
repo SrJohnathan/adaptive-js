@@ -1,0 +1,11 @@
+{
+  "mappings": "AAAA,SAAS,kBAAkB;AAC3B,SAAS,sBAAsB;;AAE/B,eAAe,SAAS,mBAAmB;CACzC,OACE,8CACE,qBAAC,YAAD,EAAc,GACd,qBAAC,gBAAD,EAAkB,EACjB",
+  "names": [],
+  "sources": [
+    "/home/johnathan/RustroverProjects/adaptive-js/examples/Rede/src/pages/autenticacao.tsx"
+  ],
+  "version": 3,
+  "sourcesContent": [
+    "import { AuthScreen } from \"../components/omni-hub/auth-screen\";\nimport { ToastContainer } from \"../components/omni-hub/toast-container\";\n\nexport default function AutenticacaoPage() {\n  return (\n    <>\n      <AuthScreen />\n      <ToastContainer />\n    </>\n  );\n}"
+  ]
+}

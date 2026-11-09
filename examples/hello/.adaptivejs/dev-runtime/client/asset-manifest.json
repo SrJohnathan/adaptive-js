@@ -1,0 +1,37 @@
+{
+  "components/reactive-hydrate": {
+    "script": "/assets/entry-3RZ8hciu.js",
+    "styles": [],
+    "global": false
+  },
+  "components/client": {
+    "script": "/assets/entry-B2jtra-P.js",
+    "styles": [],
+    "global": false
+  },
+  "components/hydrate": {
+    "script": "/assets/entry-DpoIzxzc.js",
+    "styles": [],
+    "global": false
+  },
+  "components/lucide-icons-showcase": {
+    "script": "/assets/entry-LRTJimPO.js",
+    "styles": [],
+    "global": false
+  },
+  "components/reactive-client": {
+    "script": "/assets/entry-VKdIZK5U.js",
+    "styles": [],
+    "global": false
+  },
+  "components/recycler-hydrate": {
+    "script": "/assets/entry-ul0IMaAH.js",
+    "styles": [],
+    "global": false
+  },
+  "components/hydrate-lista-map": {
+    "script": "/assets/entry-vWQE7gIP.js",
+    "styles": [],
+    "global": false
+  }
+}

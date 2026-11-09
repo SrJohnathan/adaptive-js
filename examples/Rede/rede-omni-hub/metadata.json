@@ -1,0 +1,6 @@
+{
+  "name": "Rede Omni Hub",
+  "description": "Orquestrador unificado corporativo de atendimento omnichannel, catálogo ERP, delivery iFood e inteligência artificial.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

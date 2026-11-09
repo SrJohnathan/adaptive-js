@@ -1,0 +1,1 @@
+import{n as e}from"./chunk-DgnDx5kT.js";import{n as t}from"./chunk-DoA3y391.js";e(`components/chatscreen/list-contects`,t);
